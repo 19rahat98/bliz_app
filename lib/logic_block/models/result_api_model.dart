@@ -5,6 +5,7 @@ class ResultApiModel {
   final dynamic pagination;
   final dynamic attr;
   final String code;
+  final String token;
 
   ResultApiModel({
     this.success,
@@ -13,6 +14,7 @@ class ResultApiModel {
     this.pagination,
     this.attr,
     this.code,
+    this.token,
   });
 
   factory ResultApiModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class ResultApiModel {
         pagination: json['pagination'],
         attr: json['attr'],
         code: json['code'].toString() ?? 'Unknown',
+        token: json['token'].toString(),
       );
     } catch (error) {
       return ResultApiModel(

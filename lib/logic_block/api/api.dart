@@ -7,7 +7,16 @@ import 'package:bliz/logic_block/models/result_api_model.dart';
 class Api {
   ///URL API
   static const String REGISTRATION_USER = "/entityRegistration";
-  static const String LOGIN_USER = "/api/login";
+  static const String LOGIN_USER = "/login";
+  static const String GET_USER = "/getProfile";
+
+  static Future<dynamic> getUser(params) async{
+    final result = await httpManager.get(
+      url: GET_USER,
+      params: params,
+    );
+    return ResultApiModel.fromJson(result);
+  }
 
   static Future<dynamic> userLogin(params) async{
     final result = await httpManager.post(

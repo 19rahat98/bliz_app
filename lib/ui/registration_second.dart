@@ -19,7 +19,7 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
 
   @override
   void initState() {
-    //userFullName.addListener(() {});
+    print('asd');
     super.initState();
   }
 

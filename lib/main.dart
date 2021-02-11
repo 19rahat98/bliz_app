@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:bliz/ui/registration_second.dart';
-
 import 'logic_block/blocs/bloc.dart';
 
 void main() {
@@ -19,6 +17,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthenticationBloc>(
           create: (context) => AuthenticationBloc(),
+        ),
+        BlocProvider<LoginBloc>(
+          create: (context) => LoginBloc(),
         ),
       ],
       child: MaterialApp(

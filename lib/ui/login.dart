@@ -1,5 +1,12 @@
+import 'package:bliz/ui/registration_second.dart';
+import 'package:bliz/ui/user_screen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+
+import 'package:bliz/logic_block/blocs/bloc.dart';
+
 
 class Login extends StatefulWidget {
   @override
@@ -7,7 +14,51 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String password;
+  TextEditingController _userPhoneNumber = TextEditingController();
+  TextEditingController _userPassword = TextEditingController();
+
+  _singIn() {
+    BlocProvider.of<LoginBloc>(context).add(
+      OnLogin(
+        userPhoneNumber: _userPhoneNumber.text,
+        password: _userPassword.text,
+      ),
+    );
+  }
+
+  Future<void> _showMessage(String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'sign_up',
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  message,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'close',
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +93,7 @@ class _LoginState extends State<Login> {
               children: [
 
                 TextFormField(
+                  controller: _userPhoneNumber,
                   keyboardType: TextInputType.number,
                   decoration: new InputDecoration(
                     enabledBorder: OutlineInputBorder(
@@ -59,8 +111,9 @@ class _LoginState extends State<Login> {
                   autovalidate: true,
                   child: Container(
                     child: TextFormField(
+                      controller: _userPassword,
                         obscureText: true,
-                        onChanged: (val) => password = val,
+                        //onChanged: (val) => password = val,
                         decoration: new InputDecoration(
                           enabledBorder: OutlineInputBorder(
                               borderSide: new BorderSide(
@@ -82,18 +135,86 @@ class _LoginState extends State<Login> {
               ],
             ),
           ),
-          Container(
-            width: 350,
-            child: RaisedButton(
-              color: Colors.blue,
-              child: Text(
-                'Войти в аккаунт',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: (){},
-            ),
+          BlocBuilder<LoginBloc, LoginState>(
+            builder: (context, register) {
+              return BlocListener<LoginBloc, LoginState>(
+                  listener: (context, state) {
+                    if(state is LoginLoading){
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                    else if (state is LoginFail) {
+                      _showMessage(
+                        state.code,
+                      );
+                    }
+                    else if (state is LoginSuccess) {
+                      print("asdasd");
+                      final snackBar = SnackBar(
+                        content: Text(
+                          'register_success',
+                        ),
+                        action: SnackBarAction(
+                          label: 'sign_in',
+                          onPressed: () {
+                            //Navigator.pop(context);
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return UserScreen();
+                              },
+                              fullscreenDialog: true,
+                            ));
+                          },
+                        ),
+                      );
+                      Scaffold.of(context).showSnackBar(snackBar);
+                      return Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return UserScreen();
+                        },
+                        fullscreenDialog: true,
+                      ));
+                    }
+                  },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 350,
+                          child: RaisedButton(
+                            color: Colors.blue,
+                            child: Text(
+                              'Войти в аккаунт',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: (){
+                              _singIn();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              );
+            },
           ),
-          Container(),
+          Container(
+            child: Text.rich(TextSpan(
+                text: 'Нет аккаунта? ',
+                children: <InlineSpan>[
+                  TextSpan(
+                    text: 'Зарегестрируйтесь',
+                    style: TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()..onTap = () {
+                      print('Terms and Conditions Single Tap');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegistrationSecond()),
+                      );
+                    },
+                  )
+                ]
+            )),
+          ),
         ],
       ),
     );

@@ -8,7 +8,7 @@ import 'bloc.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   AuthenticationBloc() : super(InitialAuthenticationState());
-  final RegistrationRepository registrationRepository = RegistrationRepository();
+  final UserRepository registrationRepository = UserRepository();
 
   @override
   Stream<AuthenticationState> mapEventToState(event) async* {

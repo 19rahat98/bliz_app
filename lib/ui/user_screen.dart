@@ -1,11 +1,15 @@
+import 'package:bliz/logic_block/blocs/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class UserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
-
+    BlocProvider.of<LoginBloc>(context).add(
+      GetToken(),
+    );
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -125,7 +129,11 @@ class UserScreen extends StatelessWidget {
                           width: 300.0,
                           height: 50.0,
                           child: OutlineButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              BlocProvider.of<LoginBloc>(context).add(
+                                GetToken(),
+                              );
+                            },
                             //TODO n
                             child: Text(
                               'Отказать с причиной',
