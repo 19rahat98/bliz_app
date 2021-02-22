@@ -1,3 +1,6 @@
+import 'package:bliz/ui/driverMap.dart';
+import 'package:bliz/ui/favorites_list.dart';
+import 'package:bliz/ui/find_cargo.dart';
 import 'package:bliz/ui/gruz_result.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'logic_block/blocs/bloc.dart';
 import 'package:bliz/ui/add_cargo.dart';
+import 'logic_block/blocs/cargo_list/cargo_bloc.dart';
 import 'logic_block/blocs/user_data_bloc/udata_bloc.dart';
 import 'logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
 import 'package:bliz/logic_block/providers/city_list_provider.dart';
@@ -33,6 +37,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<AddCargoBloc>(
           create: (context) => AddCargoBloc(),
         ),
+        BlocProvider<CargoBloc>(
+          create: (context) => CargoBloc(),
+        ),
       ],
       child: MultiProvider(
         providers: [
@@ -50,7 +57,7 @@ class MyApp extends StatelessWidget {
               headline1: GoogleFonts.ibmPlexSans(fontSize: 20, color: Colors.white),
             ),
           ),
-          home: GruzResult(),
+          home: FindCargo(),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Result {
   bool success;
   List<Data> data;
@@ -56,8 +58,13 @@ class Data {
     }
     if (json['additional'] != null) {
       additional = new List<Additional>();
-      json['additional'].forEach((v) {
-        additional.add(new Additional.fromJson(v));
+      json['additional'].forEach((value) {
+        if(value.isNotEmpty){
+          additional.add(new Additional.fromJson(value));
+        }
+        print(json["id"]);
+        print(value);
+
       });
     }
     if (json['price'] != null) {
@@ -201,13 +208,23 @@ class Details {
 }
 
 class Additional {
-  List<String> docs;
+  List docs;
 
   Additional({this.docs});
 
-  Additional.fromJson(Map<String, dynamic> json) {
+/*  Additional.fromJson(Map<String, dynamic> json) {
     docs = json['docs'].cast<String>();
+  }*/
+
+  Additional.fromJson(Map<String, dynamic> json) {
+    docs = new List();
+    json['docs'].forEach((value) {
+      docs.add(value);
+    });
   }
+
+
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

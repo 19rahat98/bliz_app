@@ -17,7 +17,7 @@ class CargoBloc extends Bloc<CargoEvent, CargoState> {
     if (event is GetCargoFromDb) {
       yield CargoLoading();
       Map<String, dynamic> params = {
-        "category_id": event.id,
+        "category_id": event.id == null ? 1 : event.id,
         "page": 2,
       };
 
@@ -27,18 +27,18 @@ class CargoBloc extends Bloc<CargoEvent, CargoState> {
       print(result.data);
       ///Case success
       if (result.success && result.data != []) {
+        print('hg');
         final Iterable iterableList = result?.data ?? [];
         final listCategoriesItems = iterableList.map((item){
           return Data.fromJson(item);
         }).toList();
         for(var item in listCategoriesItems){
-          print('hg');
           print(item.details.first.from.toString());
         }
         //final Data cargoData = Data.fromJson(result.data.first);
         //print(cargoData.user.first.fullName);
         ///Notify loading to UI
-        yield CargoSuccess(cargo_list: listCategoriesItems);
+        yield CargoSuccess(cargoList: listCategoriesItems);
       } else {
         ///Notify loading to UI
         yield CargoFail(code: result.message);

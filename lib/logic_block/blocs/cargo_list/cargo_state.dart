@@ -1,12 +1,13 @@
+import 'package:bliz/logic_block/models/cargo_model.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 abstract class CargoState {}
 
 class CargoSuccess extends CargoState {
-  final List<dynamic> cargo_list;
+  final List<Data> cargoList;
 
-  CargoSuccess({this.cargo_list});
+  CargoSuccess({this.cargoList});
 }
 
 class InitialCargoState extends CargoState {}
