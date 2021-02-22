@@ -10,6 +10,66 @@ class Api {
   static const String LOGIN_USER = "/login";
   static const String GET_USER = "/getProfile";
   static const String ADD_NEW_CARGO = "/newAddPost";
+  static const String GET_COUNTRY_LIST = "/country";
+  static const String GET_CITY_LIST = "/city";
+  static const String GET_TYPE_OF_DOCUMENTS = "/postDocuments";
+  static const String GET_TYPE_OF_PAYMENT = "/getPaymentType";
+  static const String GET_TYPE_OF_CURRENCY = "/getCurrency";
+  static const String GET_TYPE_OF_POST_LOADING = "/postLoading";
+  static const String GET_CARGO_LIST = "/newGetPost";
+
+  static Future<dynamic> getCargoList(params) async{
+    final result = await httpManager.get(
+      url: GET_CARGO_LIST,
+      params: params,
+    );
+    print(result);
+    return ResultApiModel.fromJson(result);
+  }
+
+  static Future<dynamic> getPostLoadingType() async{
+    final result = await httpManager.get(
+      url: GET_TYPE_OF_POST_LOADING,
+    );
+    return ResultApiModel.fromJson(result) ;
+  }
+
+  static Future<dynamic> getCurrencyType() async{
+    final result = await httpManager.get(
+      url: GET_TYPE_OF_CURRENCY,
+    );
+    return result;
+  }
+
+  static Future<dynamic> getPaymentType() async{
+    final result = await httpManager.get(
+      url: GET_TYPE_OF_PAYMENT,
+    );
+    return result;
+  }
+
+
+  static Future<dynamic> getDocumentsList() async{
+    final result = await httpManager.get(
+      url: GET_TYPE_OF_DOCUMENTS,
+    );
+    return ResultApiModel.fromJson(result);
+  }
+
+  static Future<dynamic> getCityList(params) async{
+    final result = await httpManager.get(
+      url: GET_CITY_LIST,
+      params: params,
+    );
+    return result;
+  }
+
+  static Future<dynamic> getCountryList() async{
+    final result = await httpManager.get(
+      url: GET_COUNTRY_LIST,
+    );
+    return result;
+  }
 
   static Future<dynamic> addNewCargo(params) async{
     final result = await httpManager.get(

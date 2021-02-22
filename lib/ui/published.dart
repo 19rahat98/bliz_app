@@ -7,6 +7,7 @@ class Published extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor:Color(0xff008EFF),
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text('Добавить объявление', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
         actions: [

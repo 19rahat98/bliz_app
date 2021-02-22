@@ -1,8 +1,18 @@
+import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:bliz/ui/published.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bliz/ui/Widgets/empty_page.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+import 'package:bliz/logic_block/models/city_model.dart';
+import 'package:bliz/logic_block/models/more_models.dart';
+import 'package:bliz/logic_block/providers/city_list_provider.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_event.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddCargoScreen extends StatefulWidget {
   @override
@@ -10,11 +20,13 @@ class AddCargoScreen extends StatefulWidget {
 }
 
 class _AddCargoScreenState extends State<AddCargoScreen> {
-  String _cityNameFrom;
-  String _cityNameTo;
+  int _cityNameFrom;
+  int _cityNameTo;
   String _shippingDate;
-  String _typeVehicle = 'Любой';
-  String _typePayment = 'Любой';
+  int _typeVehicle;
+  int _typePayment;
+  String _loadingDateTimeString = 'Выберите дату';
+  bool _loadingDateChosen = false;
   final _widthFrom = TextEditingController();
   final _widthTo = TextEditingController();
   final _priceFrom = TextEditingController();
@@ -87,6 +99,9 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
+    initializeDateFormatting();
+    final CityListProvider cityProv =
+        Provider.of<CityListProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -96,7 +111,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
           'Добавить груз',
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
         ),
-        leadingWidth: w*0.25,
+        leadingWidth: w * 0.25,
         leading: Row(
           children: [
             Container(
@@ -122,523 +137,558 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
               margin: EdgeInsets.only(right: 15), child: Icon(Icons.close)),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 20),
-                alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Text(
-                      'Добавить груз',
-                      style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff20273D)),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      alignment: Alignment.center,
-                      width: w * 0.6,
-                      child: Text(
-                        'Заполните всю необходимую информацию о вашем грузе.',
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                            color: Color(0xffA2A9B2)),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Откуда',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      width: w,
-                      height: 60,
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: DropdownButton<String>(
-                        hint: Text(
-                          'Откуда',
-                          style:
-                              TextStyle(fontSize: 17, color: Color(0xffA2A9B2)),
-                        ),
-                        value: _cityNameFrom,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_forward_ios),
-                        iconSize: 12,
-                        elevation: 4,
-                        style: TextStyle(color: Colors.black87),
-                        underline: Container(
-                          height: 1,
-                          color: Color(0xffDFE2E5),
-                        ),
-                        dropdownColor: Colors.white,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _cityNameFrom = newValue;
-                          });
-                        },
-                        items: <String>['Алматы', 'Астана', 'Акутау', 'Атырау']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
+      body: FutureBuilder<bool>(
+          future: cityProv.getData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.none)
+              return Center(child: CircularProgressIndicator());
+            else if (snapshot.hasError || snapshot.data == false)
+              return Center(
+                  child: emptyPage(Icons.error_outline, 'Something is wrong'));
+            else if (snapshot.data == true) {
+              return SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Добавить груз',
                               style: TextStyle(
-                                  fontSize: 17, color: Color(0xff20273D)),
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff20273D)),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Куда',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      width: w,
-                      height: 60,
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: DropdownButton<String>(
-                        hint: Text(
-                          'Куда',
-                          style:
-                              TextStyle(fontSize: 17, color: Color(0xffA2A9B2)),
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 5),
+                              alignment: Alignment.center,
+                              width: w * 0.6,
+                              child: Text(
+                                'Заполните всю необходимую информацию о вашем грузе.',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
+                                    color: Color(0xffA2A9B2)),
+                              ),
+                            )
+                          ],
                         ),
-                        value: _cityNameTo,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_forward_ios),
-                        iconSize: 12,
-                        elevation: 4,
-                        style: TextStyle(color: Colors.black87),
-                        underline: Container(
-                          height: 1,
-                          color: Color(0xffDFE2E5),
-                        ),
-                        dropdownColor: Colors.white,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _cityNameTo = newValue;
-                          });
-                        },
-                        items: <String>['Алматы', 'Астана', 'Акутау', 'Атырау']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                  fontSize: 17, color: Color(0xff20273D)),
+                      ),
+                      Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              child: Text(
+                                'Откуда',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Дата погрузки',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      width: w,
-                      height: 60,
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: DropdownButton<String>(
-                        hint: Text(
-                          'Выберите дату',
-                          style:
-                              TextStyle(fontSize: 17, color: Color(0xffA2A9B2)),
-                        ),
-                        value: _shippingDate,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_forward_ios),
-                        iconSize: 12,
-                        elevation: 4,
-                        style: TextStyle(color: Colors.black87),
-                        underline: Container(
-                          height: 1,
-                          color: Color(0xffDFE2E5),
-                        ),
-                        dropdownColor: Colors.white,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _shippingDate = newValue;
-                          });
-                        },
-                        items: <String>['Алматы', 'Астана', 'Акутау', 'Атырау']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                  fontSize: 17, color: Color(0xff20273D)),
+                            Container(
+                              width: w,
+                              height: 60,
+                              margin: EdgeInsets.only(bottom: 15),
+                              child: DropdownButton<int>(
+                                hint: Text(
+                                  'Откуда',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Color(0xffA2A9B2)),
+                                ),
+                                value: _cityNameFrom,
+                                isExpanded: true,
+                                icon: Icon(Icons.arrow_forward_ios),
+                                iconSize: 12,
+                                elevation: 4,
+                                style: TextStyle(color: Colors.black87),
+                                underline: Container(
+                                  height: 1,
+                                  color: Color(0xffDFE2E5),
+                                ),
+                                dropdownColor: Colors.white,
+                                onChanged: (int newValue) {
+                                  setState(() {
+                                    _cityNameFrom = newValue;
+                                  });
+                                },
+                                items: cityProv.cityData.map((CityData map) {
+                                  return DropdownMenuItem<int>(
+                                    value: map.id,
+                                    child: new Text(
+                                      map.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Color(0xff20273D)),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Нужен транспорт',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      width: w,
-                      height: 60,
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: DropdownButton<String>(
-                        /*hint: Text(
-                          'Выберите дату',
-                          style:
-                          TextStyle(fontSize: 17, color: Color(0xffA2A9B2)),
-                        ),*/
-                        value: _typeVehicle,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_forward_ios),
-                        iconSize: 12,
-                        elevation: 4,
-                        style: TextStyle(color: Colors.black87),
-                        underline: Container(
-                          height: 1,
-                          color: Color(0xffDFE2E5),
-                        ),
-                        dropdownColor: Colors.white,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _typeVehicle = newValue;
-                          });
-                        },
-                        items: <String>['Любой', 'Любой2', 'Любой3', 'Любой4']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                  fontSize: 17, color: Color(0xff20273D)),
+                            Container(
+                              child: Text(
+                                'Куда',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Вес, тн',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 5,bottom: 10),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            width: w * 0.45,
-                            child: TextField(
-                              controller: _widthFrom,
-                              decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "от"),
+                            Container(
+                              width: w,
+                              height: 60,
+                              margin: EdgeInsets.only(bottom: 15),
+                              child: DropdownButton<int>(
+                                hint: Text(
+                                  'Куда',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Color(0xffA2A9B2)),
+                                ),
+                                value: _cityNameTo,
+                                isExpanded: true,
+                                icon: Icon(Icons.arrow_forward_ios),
+                                iconSize: 12,
+                                elevation: 4,
+                                style: TextStyle(color: Colors.black87),
+                                underline: Container(
+                                  height: 1,
+                                  color: Color(0xffDFE2E5),
+                                ),
+                                dropdownColor: Colors.white,
+                                onChanged: (int newValue) {
+                                  setState(() {
+                                    _cityNameTo = newValue;
+                                  });
+                                },
+                                items: cityProv.cityData.map((CityData map) {
+                                  return DropdownMenuItem<int>(
+                                    value: map.id,
+                                    child: new Text(
+                                      map.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Color(0xff20273D)),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
                             ),
-                          ),
-                          Container(
-                            height: 40,
-                            child: VerticalDivider(
-                              color: Color(0xffDFE2E5),
-                              thickness: 1,
-                              width: 2,
-                              indent: 5,
-                              endIndent: 5,
+                            Container(
+                              child: Text(
+                                'Дата погрузки',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            width: w * 0.45,
-                            child: TextField(
-                              controller: _widthTo,
-                              decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "от"),
+                            Container(
+                              width: w,
+                              height: 50,
+                              margin: EdgeInsets.only(bottom: 15),
+                              child: InkWell(
+                                onTap: () {
+                                  DatePicker.showDatePicker(context,
+                                      showTitleActions: true,
+                                      minTime: DateTime.now(),
+                                      maxTime: DateTime(2030, 1, 1),
+                                      onConfirm: (date) {
+                                    print('confirm $date');
+                                    setState(() {
+                                      _loadingDateTimeString =
+                                          DateFormat.yMMMd('ru').format(date);
+                                      _loadingDateChosen = true;
+                                    });
+                                  },
+                                      currentTime: DateTime.now(),
+                                      locale: LocaleType.ru);
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _loadingDateTimeString,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: _loadingDateChosen == true
+                                            ? Color(0xff20273D)
+                                            : Color(0xffA2A9B2),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 12,
+                                      color: Colors.black.withOpacity(0.7),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Объем, м3',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 5,bottom: 20),
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Color(0xffDFE2E5)),
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            width: w * 0.45,
-                            child: TextField(
-                              controller: _priceFrom,
-                              decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "от",
-                              contentPadding: EdgeInsets.symmetric(vertical: 1)),
-                            ),
-                          ),
-                          Container(
-                            height: 40,
-                            child: VerticalDivider(
-                              color: Color(0xffDFE2E5),
-                              thickness: 1,
-                              width: 2,
-                              indent: 5,
-                              endIndent: 5,
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            width: w * 0.45,
-                            child: TextField(
-                              controller: _priceTo,
-                              decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "от"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Форма оплаты',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      width: w,
-                      height: 60,
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: DropdownButton<String>(
-                        /*hint: Text(
-                          'Выберите дату',
-                          style:
-                          TextStyle(fontSize: 17, color: Color(0xffA2A9B2)),
-                        ),*/
-                        value: _typeVehicle,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_forward_ios),
-                        iconSize: 12,
-                        elevation: 4,
-                        style: TextStyle(color: Colors.black87),
-                        underline: Container(
-                          height: 1,
-                          color: Color(0xffDFE2E5),
-                        ),
-                        dropdownColor: Colors.white,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _typePayment = newValue;
-                          });
-                        },
-                        items: <String>['Любой', 'Любой2', 'Любой3', 'Любой4']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                  fontSize: 17, color: Color(0xff20273D)),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        'Стоимость перевозки, тг',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff20273D).withOpacity(0.5)),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 5,bottom: 30),
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 1, color: Color(0xffDFE2E5)),
-                          borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            width: w * 0.45,
-                            child: TextField(
-                              controller: _priceFrom,
-                              decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "от"),
-                            ),
-                          ),
-                          Container(
-                            height: 40,
-                            child: VerticalDivider(
-                              color: Color(0xffDFE2E5),
-                              thickness: 1,
-                              width: 2,
-                              indent: 5,
-                              endIndent: 5,
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            width: w * 0.45,
-                            child: TextField(
-                              controller: _priceTo,
-                              decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "от"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    BlocBuilder<AddCargoBloc, AddCargoState>(
-                      builder: (context, register) {
-                        return BlocListener<AddCargoBloc, AddCargoState>(
-                            listener: (context, state) {
-                              if(state is InitialAddACargoState || state is AddCargoLoading){
-                                return Center(child: CircularProgressIndicator(),);
-                              }
-                              else if (state is AddCargoFail) {
-                                _showMessage(
-                                  state.code,
-                                );
-                              }
-                              else if (state is AddCargoSuccess) {
-                                final snackBar = SnackBar(
-                                  content: Text(
-                                    'success',
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Нужен транспорт',
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xff20273D).withOpacity(0.5)),
                                   ),
-                                  action: SnackBarAction(
-                                    label: 'sign_in',
-                                    onPressed: () {
-                                      print('clase');
-                                    },
+                                ),
+                                Container(
+                                  width: w,
+                                  alignment: Alignment.centerLeft,
+                                  //margin: EdgeInsets.only(bottom: 10),
+                                  height: 40,
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<int>(
+                                      hint: Text(
+                                        'Укажите тип транспорта',
+                                        style: TextStyle(
+                                            fontSize: 17, color: Color(0xffA2A9B2)),
+                                      ),
+                                      value: _typeVehicle,
+                                      isExpanded: true,
+                                      isDense: true,
+                                      icon: Icon(Icons.arrow_forward_ios),
+                                      iconSize: 12,
+                                      elevation: 4,
+                                      style: TextStyle(color: Colors.black87),
+                                      dropdownColor: Colors.white,
+                                      onChanged: (int newValue) {
+                                        setState(() {
+                                          _typeVehicle = newValue;
+                                        });
+                                      },
+                                      items: cityProv.postLoadingList
+                                          .map((PostLoading map) {
+                                        return DropdownMenuItem<int>(
+                                          value: map.id,
+                                          child: new Text(
+                                            map.name,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                color: Color(0xff20273D)),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
                                   ),
-                                );
-                                Scaffold.of(context).showSnackBar(snackBar);
-                              }
-                            },
-                            child: Container(
-                              child: Column(
+                                ),
+                                Divider(
+                                  color: Color(0xffDFE2E5),
+                                  height: 0,
+                                ),
+                              ],
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: Text(
+                                'Вес, тн',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 5, bottom: 16),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Color(0xffDFE2E5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
                                 children: [
                                   Container(
-                                    width: 350,
-                                    child: RaisedButton(
-                                      color: Colors.blue,
-                                      child: Text(
-                                        'Войти в аккаунт',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      onPressed: (){
-                                        _addNewCargo();
-                                      },
+                                    padding: EdgeInsets.only(left: 10),
+                                    width: w * 0.45,
+                                    child: TextField(
+                                      controller: _widthFrom,
+                                      keyboardType: TextInputType.number,
+                                      decoration: new InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "от"),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 40,
+                                    child: VerticalDivider(
+                                      color: Color(0xffDFE2E5),
+                                      thickness: 1,
+                                      width: 2,
+                                      indent: 5,
+                                      endIndent: 5,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(left: 10),
+                                    width: w * 0.45,
+                                    child: TextField(
+                                      controller: _widthTo,
+                                      keyboardType: TextInputType.number,
+                                      decoration: new InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "от"),
                                     ),
                                   ),
                                 ],
                               ),
-                            )
-                        );
-                      },
-                    ),
-                    Container(
-                      width: w * 0.9,
-                      height: 50,
-                      child: FlatButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Подробно о грузе',
-                          style: TextStyle(color: Colors.white),
+                            ),
+                            Container(
+                              child: Text(
+                                'Объем, м3',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 5, bottom: 16),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Color(0xffDFE2E5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.only(left: 10),
+                                    width: w * 0.45,
+                                    child: TextField(
+                                      controller: _priceFrom,
+                                      keyboardType: TextInputType.number,
+                                      decoration: new InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "от",
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 1)),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 40,
+                                    child: VerticalDivider(
+                                      color: Color(0xffDFE2E5),
+                                      thickness: 1,
+                                      width: 2,
+                                      indent: 5,
+                                      endIndent: 5,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(left: 10),
+                                    width: w * 0.45,
+                                    child: TextField(
+                                      controller: _priceTo,
+                                      keyboardType: TextInputType.number,
+                                      decoration: new InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "от"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              child: Text(
+                                'Форма оплаты',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
+                            ),
+                            Container(
+                              width: w,
+                              height: 60,
+                              margin: EdgeInsets.only(bottom: 15),
+                              child: DropdownButton<int>(
+                                hint: Text(
+                                  'Укажите тип оплаты',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Color(0xffA2A9B2)),
+                                ),
+                                value: _typePayment,
+                                isExpanded: true,
+                                icon: Icon(Icons.arrow_forward_ios),
+                                iconSize: 12,
+                                elevation: 4,
+                                style: TextStyle(color: Colors.black87),
+                                underline: Container(
+                                  height: 1,
+                                  color: Color(0xffDFE2E5),
+                                ),
+                                dropdownColor: Colors.white,
+                                onChanged: (int newValue) {
+                                  setState(() {
+                                    _typePayment = newValue;
+                                  });
+                                },
+                                items:
+                                    cityProv.paymentTypeList.map((Payment map) {
+                                  return DropdownMenuItem<int>(
+                                    value: map.id,
+                                    child: new Text(
+                                      map.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Color(0xff20273D)),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            Container(
+                              child: Text(
+                                'Стоимость перевозки, тг',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 5, bottom: 30),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Color(0xffDFE2E5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.only(left: 10),
+                                    width: w * 0.45,
+                                    child: TextField(
+                                      controller: _priceFrom,
+                                      keyboardType: TextInputType.number,
+                                      decoration: new InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "от"),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 40,
+                                    child: VerticalDivider(
+                                      color: Color(0xffDFE2E5),
+                                      thickness: 1,
+                                      width: 2,
+                                      indent: 5,
+                                      endIndent: 5,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(left: 10),
+                                    width: w * 0.45,
+                                    child: TextField(
+                                      controller: _priceTo,
+                                      keyboardType: TextInputType.number,
+                                      decoration: new InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "от"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            BlocBuilder<AddCargoBloc, AddCargoState>(
+                              builder: (context, register) {
+                                return BlocListener<AddCargoBloc,
+                                        AddCargoState>(
+                                    listener: (context, state) {
+                                      if (state is InitialAddACargoState ||
+                                          state is AddCargoLoading) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (state is AddCargoFail) {
+                                        _showMessage(
+                                          state.code,
+                                        );
+                                      } else if (state is AddCargoSuccess) {
+                                       /*final snackBar = SnackBar(
+                                          content: Text(
+                                            'success',
+                                          ),
+                                          action: SnackBarAction(
+                                            label: 'sign_in',
+                                            onPressed: () {
+                                              print('clase');
+                                            },
+                                          ),
+                                        );
+                                        Scaffold.of(context)
+                                            .showSnackBar(snackBar);*/
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => Published()),
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      width: w * 0.9,
+                                      height: 50,
+                                      child: FlatButton(
+                                        onPressed: () {
+                                          _addNewCargo();
+                                        },
+                                        child: Text(
+                                          'ДОБАВИТЬ ОБЪЯВЛЕНИЕ',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30.0),
+                                        ),
+                                        color: Colors.blue,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 25.0, vertical: 10.0),
+                                      ),
+                                    ),
+                                );
+                              },
+                            ),
+
+                          ],
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        color: Colors.blue,
-                        padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
-                      ),
-                    ),
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              );
+            } else
+              return Center(child: CircularProgressIndicator());
+          }),
     );
   }
 }
