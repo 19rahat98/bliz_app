@@ -18,3 +18,14 @@ class UserDataSuccess extends UserDataState {
   UserDataSuccess({this.userdata});
 }
 
+
+
+class UserLogoutLoading extends UserDataState {}
+
+class UserLogoutFail extends UserDataState {
+  final String message;
+
+  UserLogoutFail(this.message);
+}
+
+class UserLogoutSuccess extends UserDataState {}
