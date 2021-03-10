@@ -31,6 +31,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
   final _widthTo = TextEditingController();
   final _priceFrom = TextEditingController();
   final _priceTo = TextEditingController();
+
   _addNewCargo() {
     BlocProvider.of<AddCargoBloc>(context).add(
       AddCargo(
