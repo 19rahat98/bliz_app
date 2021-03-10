@@ -5,4 +5,5 @@ class UserDataRepository{
   Future<dynamic> fetchData(params) async{
     return await Api.getUser(params);
   }
+
 }

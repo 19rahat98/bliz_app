@@ -24,3 +24,5 @@ class LogoutFail extends LoginState {
 }
 
 class LogoutSuccess extends LoginState {}
+
+class DeleteUserSuccess extends LoginState{}
