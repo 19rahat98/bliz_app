@@ -13,4 +13,7 @@ class UserRepository {
   Future<dynamic> getUser(params) async {
     return await Api.getUser(params);
   }
+  Future<dynamic> deleteUserRepository(params) async{
+    return await Api.deleteUser(params);
+  }
 }

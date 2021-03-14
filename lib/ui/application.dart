@@ -1,7 +1,12 @@
+import 'package:bliz/logic_block/models/cargo_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Application extends StatelessWidget {
+  final Data gruzInfo;
+
+  const Application({Key key, this.gruzInfo}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -68,10 +73,40 @@ class Application extends StatelessWidget {
                     style:
                         TextStyle(fontSize: 21.0, fontWeight: FontWeight.w600),
                   ),
-                  Text('Нур-Султан - Алматы, 14 июня',
-                      style: TextStyle(
-                        fontSize: 15.0,
-                      ))
+                  RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: gruzInfo.details.first.from !=null ? '${gruzInfo.details.first.from}' : 'error',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.black,
+                          )),
+                      TextSpan(
+                          text: ' - ',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.black,
+                          )),
+                      TextSpan(
+                          text: gruzInfo.details.first.to !=null ? '${gruzInfo.details.first.to}' : 'error',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.black,
+                          )),
+                      TextSpan(
+                          text: ', ',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.black,
+                          )),
+                      TextSpan(
+                          text: gruzInfo.details.first.startDate !=null ? '${gruzInfo.details.first.startDate}' : 'error',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.black,
+                          )),
+                    ]),
+                  ),
                 ],
               ),
             ),
@@ -114,7 +149,7 @@ class Application extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'А. Аскаров',
+                                gruzInfo.user.first.fullName != null ? '${gruzInfo.user.first.fullName}' : 'error',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.0),
@@ -231,7 +266,7 @@ class Application extends StatelessWidget {
                               ),
                               //TODO n
                               Text(
-                                '14 июня',
+                                gruzInfo.details.first.startDate !=null ? '${gruzInfo.details.first.startDate}' : 'error',
                                 style: TextStyle(
                                     fontSize: 15.0,
                                     fontWeight: FontWeight.w500),
@@ -447,7 +482,7 @@ class Application extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(left: 20),
                         child: Text(
-                          'Нур-Султан',
+                          gruzInfo.details.first.from !=null ? '${gruzInfo.details.first.from}' : 'error',
                           style: TextStyle(
                               fontSize: 17,
                               color: Color(0xff20273D),
@@ -486,7 +521,7 @@ class Application extends StatelessWidget {
                             ),
                             //TODO n
                             Text(
-                              '14 июня',
+                              gruzInfo.details.first.startDate !=null ? '${gruzInfo.details.first.startDate}' : 'error',
                               style: TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.w400,
@@ -520,7 +555,7 @@ class Application extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(left: 20),
                         child: Text(
-                          'Алматы',
+                          gruzInfo.details.first.to !=null ? '${gruzInfo.details.first.to}' : 'error',
                           style: TextStyle(
                               fontSize: 17,
                               color: Color(0xff20273D),
@@ -559,7 +594,7 @@ class Application extends StatelessWidget {
                             ),
                             //TODO n
                             Text(
-                              '~620 км',
+                              gruzInfo.details.first.distance != null ? '${gruzInfo.details.first.distance} км' : 'error',
                               style: TextStyle(
                                   fontSize: 15.0,
                                   fontWeight: FontWeight.w500,
@@ -658,7 +693,7 @@ class Application extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 14, color: Color(0xffA2A9B2)),
                             ),
-                            Text('200 000 ₸',
+                            Text(gruzInfo.price.first.price != null ? '${gruzInfo.price.first.price}' : 'error',
                                 style: TextStyle(
                                     fontSize: 18, color: Color(0xff20273D))),
                             Text(
@@ -696,12 +731,13 @@ class Application extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 10.0),
+                      margin: EdgeInsets.only(bottom: 10.0),
                       child: Text(
-                    'Внимание! Отказаться от заявки, можно только пока вы не совершили погрузку!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xff20273D).withOpacity(0.5)),
-                  ))
+                        'Внимание! Отказаться от заявки, можно только пока вы не совершили погрузку!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Color(0xff20273D).withOpacity(0.5)),
+                      ))
                 ],
               ),
             ),

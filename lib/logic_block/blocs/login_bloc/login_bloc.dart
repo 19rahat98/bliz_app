@@ -64,6 +64,36 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginFail(code: result.message);
       }
     }
+    if (event is DeleteUser){
+      yield LoginLoading();
+
+      final SharedPreferences cp = await _prefs;
+      Map<String, dynamic> params = {
+        "token": cp.getString("token"),
+        "password": event.password,
+      };
+
+      final ResultApiModel result = await userRepository.deleteUserRepository(params);
+
+      if (result.success)  {
+        try {
+          cp.remove("token");
+          yield DeleteUserSuccess();
+        } catch (error) {
+          ///Notify loading to UI
+          print(error);
+          yield LoginFail(code: "Error ketti shared pref");
+        }
+
+      }
+      else if(!result.success){
+        yield LoginFail(code: result.message.toString());
+      }
+      // if(result.message == "Не найден пользователь" || result.message =="Не совпадают пароль"){
+      //   yield UserDataFail(code: result.message.toString());
+      // }
+
+    }
     //TODO potom udalit
     if(event is GetToken){
       final SharedPreferences prefs = await _prefs;

@@ -1,7 +1,9 @@
+import 'package:bliz/ui/Widgets/add_vehicle.dart';
 import 'package:bliz/ui/driverMap.dart';
 import 'package:bliz/ui/favorites_list.dart';
 import 'package:bliz/ui/find_cargo.dart';
 import 'package:bliz/ui/gruz_result.dart';
+import 'package:bliz/ui/registration_second.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
               headline1: GoogleFonts.ibmPlexSans(fontSize: 20, color: Colors.white),
             ),
           ),
-          home: FindCargo(),
+          home: AddVehicleScreen(),
         ),
       ),
     );

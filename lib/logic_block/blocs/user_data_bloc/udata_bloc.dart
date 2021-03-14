@@ -49,5 +49,22 @@ class UserDataBloc extends Bloc<UserDataEvent, UserDataState> {
     }
 
 
+    if (event is UserLogout) {
+      print('test');
+      yield UserLogoutLoading();
+      try {
+        ///Begin start AuthBloc Event OnProcessLogout
+        httpManager.baseOptions.headers = {};
+        ///Begin delete user on SharedPreferences
+        final SharedPreferences prefs = await _prefs;
+        await prefs.remove("token");
+        ///Notify loading to UI
+        yield UserLogoutSuccess();
+      } catch (error) {
+        ///Notify loading to UI
+        yield UserLogoutFail(error.toString());
+      }
+    }
+
   }
 }

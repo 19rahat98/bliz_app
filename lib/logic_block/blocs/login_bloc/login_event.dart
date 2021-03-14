@@ -12,3 +12,9 @@ class GetToken extends LoginEvent{}
 class OnLogout extends LoginEvent {
   OnLogout();
 }
+
+class DeleteUser extends LoginEvent {
+  final String password;
+
+  DeleteUser(this.password);
+}

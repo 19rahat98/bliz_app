@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bliz/logic_block/api/http_manager.dart';
+import 'package:bliz/logic_block/blocs/user_data_bloc/udata_event.dart';
 import 'package:bliz/logic_block/models/result_api_model.dart';
 
 class Api {
@@ -17,6 +18,15 @@ class Api {
   static const String GET_TYPE_OF_CURRENCY = "/getCurrency";
   static const String GET_TYPE_OF_POST_LOADING = "/postLoading";
   static const String GET_CARGO_LIST = "/newGetPost";
+  static const String DELETE_USER = "/deleteAccount";
+
+  static Future<dynamic> deleteUser(params) async{
+    final result = await httpManager.get(
+      url: DELETE_USER,
+      params: params,
+    );
+    return ResultApiModel.fromJson(result) ;
+  }
 
   static Future<dynamic> getCargoList(params) async{
     final result = await httpManager.get(

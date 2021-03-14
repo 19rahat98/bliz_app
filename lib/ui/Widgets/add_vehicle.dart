@@ -14,12 +14,12 @@ import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_event.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_state.dart';
 
-class AddCargoScreen extends StatefulWidget {
+class AddVehicleScreen extends StatefulWidget {
   @override
-  _AddCargoScreenState createState() => _AddCargoScreenState();
+  _AddVehicleScreenState createState() => _AddVehicleScreenState();
 }
 
-class _AddCargoScreenState extends State<AddCargoScreen> {
+class _AddVehicleScreenState extends State<AddVehicleScreen> {
   int _cityNameFrom;
   int _cityNameTo;
   String _shippingDate;
@@ -100,14 +100,15 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     initializeDateFormatting();
-    final CityListProvider cityProv = Provider.of<CityListProvider>(context, listen: false);
+    final CityListProvider cityProv =
+        Provider.of<CityListProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xff008EFF),
         centerTitle: true,
         title: Text(
-          'Добавить груз',
+          'Добавить спец технику',
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
         ),
         leadingWidth: w * 0.25,
@@ -158,7 +159,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Добавить груз',
+                              'Добавить спец технику',
                               style: TextStyle(
                                   fontSize: 21,
                                   fontWeight: FontWeight.w600,
@@ -169,9 +170,9 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                               alignment: Alignment.center,
                               width: w * 0.6,
                               child: Text(
-                                'Заполните всю необходимую информацию о вашем грузе.',
+                                'Заполните всю необходимую информацию о вашей спец технике',
                                 textAlign: TextAlign.center,
-                                maxLines: 2,
+                                maxLines: 3,
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.normal,
@@ -182,13 +183,31 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                         ),
                       ),
                       Container(
+                        child: Text(
+                          'Название',
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Color(0xff20273D).withOpacity(0.5)),
+                        ),
+                      ),
+                      Container(
+                        width: w,
+                        height: 60,
+                        margin: EdgeInsets.only(bottom: 15),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                              hintText: "Укажите название спец техники",
+                              hintStyle: TextStyle(color: Color(0xffA2A9B2))),
+                        ),
+                      ),
+                      Container(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
                               child: Text(
-                                'Откуда',
+                                'Город',
                                 style: TextStyle(
                                     fontSize: 13,
                                     color: Color(0xff20273D).withOpacity(0.5)),
@@ -200,7 +219,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                               margin: EdgeInsets.only(bottom: 15),
                               child: DropdownButton<int>(
                                 hint: Text(
-                                  'Откуда',
+                                  'Город',
                                   style: TextStyle(
                                       fontSize: 17, color: Color(0xffA2A9B2)),
                                 ),
@@ -236,7 +255,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                             ),
                             Container(
                               child: Text(
-                                'Куда',
+                                'Адрес',
                                 style: TextStyle(
                                     fontSize: 13,
                                     color: Color(0xff20273D).withOpacity(0.5)),
@@ -246,92 +265,11 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                               width: w,
                               height: 60,
                               margin: EdgeInsets.only(bottom: 15),
-                              child: DropdownButton<int>(
-                                hint: Text(
-                                  'Куда',
-                                  style: TextStyle(
-                                      fontSize: 17, color: Color(0xffA2A9B2)),
-                                ),
-                                value: _cityNameTo,
-                                isExpanded: true,
-                                icon: Icon(Icons.arrow_forward_ios),
-                                iconSize: 12,
-                                elevation: 4,
-                                style: TextStyle(color: Colors.black87),
-                                underline: Container(
-                                  height: 1,
-                                  color: Color(0xffDFE2E5),
-                                ),
-                                dropdownColor: Colors.white,
-                                onChanged: (int newValue) {
-                                  setState(() {
-                                    _cityNameTo = newValue;
-                                  });
-                                },
-                                items: cityProv.cityData.map((CityData map) {
-                                  return DropdownMenuItem<int>(
-                                    value: map.id,
-                                    child: new Text(
-                                      map.name,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          color: Color(0xff20273D)),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                            Container(
-                              child: Text(
-                                'Дата погрузки',
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xff20273D).withOpacity(0.5)),
-                              ),
-                            ),
-                            Container(
-                              width: w,
-                              height: 50,
-                              margin: EdgeInsets.only(bottom: 15),
-                              child: InkWell(
-                                onTap: () {
-                                  DatePicker.showDatePicker(context,
-                                      showTitleActions: true,
-                                      minTime: DateTime.now(),
-                                      maxTime: DateTime(2030, 1, 1),
-                                      onConfirm: (date) {
-                                    print('confirm $date');
-                                    setState(() {
-                                      _loadingDateTimeString =
-                                          DateFormat.yMMMd('ru').format(date);
-                                      _loadingDateChosen = true;
-                                    });
-                                  },
-                                      currentTime: DateTime.now(),
-                                      locale: LocaleType.ru);
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      _loadingDateTimeString,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        color: _loadingDateChosen == true
-                                            ? Color(0xff20273D)
-                                            : Color(0xffA2A9B2),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 12,
-                                      color: Colors.black.withOpacity(0.7),
-                                    ),
-                                  ],
-                                ),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    hintText: "Укажите адрес",
+                                    hintStyle:
+                                        TextStyle(color: Color(0xffA2A9B2))),
                               ),
                             ),
                             Column(
@@ -342,7 +280,8 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                     'Нужен транспорт',
                                     style: TextStyle(
                                         fontSize: 13,
-                                        color: Color(0xff20273D).withOpacity(0.5)),
+                                        color:
+                                            Color(0xff20273D).withOpacity(0.5)),
                                   ),
                                 ),
                                 Container(
@@ -355,7 +294,8 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                       hint: Text(
                                         'Укажите тип транспорта',
                                         style: TextStyle(
-                                            fontSize: 17, color: Color(0xffA2A9B2)),
+                                            fontSize: 17,
+                                            color: Color(0xffA2A9B2)),
                                       ),
                                       value: _typeVehicle,
                                       isExpanded: true,
@@ -564,79 +504,40 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                             ),
                             Container(
                               child: Text(
-                                'Стоимость перевозки, тг',
+                                'Цена, тг',
                                 style: TextStyle(
                                     fontSize: 13,
                                     color: Color(0xff20273D).withOpacity(0.5)),
                               ),
                             ),
                             Container(
-                              margin: EdgeInsets.only(top: 5, bottom: 30),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: Color(0xffDFE2E5)),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.only(left: 10),
-                                    width: w * 0.45,
-                                    child: TextField(
-                                      controller: _priceFrom,
-                                      keyboardType: TextInputType.number,
-                                      decoration: new InputDecoration(
-                                          border: InputBorder.none,
-                                          focusedBorder: InputBorder.none,
-                                          enabledBorder: InputBorder.none,
-                                          errorBorder: InputBorder.none,
-                                          disabledBorder: InputBorder.none,
-                                          hintText: "от"),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 40,
-                                    child: VerticalDivider(
-                                      color: Color(0xffDFE2E5),
-                                      thickness: 1,
-                                      width: 2,
-                                      indent: 5,
-                                      endIndent: 5,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.only(left: 10),
-                                    width: w * 0.45,
-                                    child: TextField(
-                                      controller: _priceTo,
-                                      keyboardType: TextInputType.number,
-                                      decoration: new InputDecoration(
-                                          border: InputBorder.none,
-                                          focusedBorder: InputBorder.none,
-                                          enabledBorder: InputBorder.none,
-                                          errorBorder: InputBorder.none,
-                                          disabledBorder: InputBorder.none,
-                                          hintText: "от"),
-                                    ),
-                                  ),
-                                ],
+                              width: w,
+                              height: 60,
+                              margin: EdgeInsets.only(bottom: 15),
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                    hintText: "Укажите цену",
+                                    hintStyle:
+                                        TextStyle(color: Color(0xffA2A9B2))),
                               ),
                             ),
                             BlocBuilder<AddCargoBloc, AddCargoState>(
                               builder: (context, register) {
                                 return BlocListener<AddCargoBloc,
-                                        AddCargoState>(
-                                    listener: (context, state) {
-                                      if (state is InitialAddACargoState ||
-                                          state is AddCargoLoading) {
-                                        return Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else if (state is AddCargoFail) {
-                                        _showMessage(
-                                          state.code,
-                                        );
-                                      } else if (state is AddCargoSuccess) {
-                                       /*final snackBar = SnackBar(
+                                    AddCargoState>(
+                                  listener: (context, state) {
+                                    if (state is InitialAddACargoState ||
+                                        state is AddCargoLoading) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else if (state is AddCargoFail) {
+                                      _showMessage(
+                                        state.code,
+                                      );
+                                    } else if (state is AddCargoSuccess) {
+                                      /*final snackBar = SnackBar(
                                           content: Text(
                                             'success',
                                           ),
@@ -649,35 +550,36 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                         );
                                         Scaffold.of(context)
                                             .showSnackBar(snackBar);*/
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => Published()),
-                                        );
-                                      }
-                                    },
-                                    child: Container(
-                                      width: w * 0.9,
-                                      height: 50,
-                                      child: FlatButton(
-                                        onPressed: () {
-                                          _addNewCargo();
-                                        },
-                                        child: Text(
-                                          'ДОБАВИТЬ ОБЪЯВЛЕНИЕ',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(30.0),
-                                        ),
-                                        color: Colors.blue,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 25.0, vertical: 10.0),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Published()),
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    width: w * 0.9,
+                                    height: 50,
+                                    child: FlatButton(
+                                      onPressed: () {
+                                        _addNewCargo();
+                                      },
+                                      child: Text(
+                                        'ДОБАВИТЬ ОБЪЯВЛЕНИЕ',
+                                        style: TextStyle(color: Colors.white),
                                       ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0),
+                                      ),
+                                      color: Colors.blue,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 25.0, vertical: 10.0),
                                     ),
+                                  ),
                                 );
                               },
                             ),
-
                           ],
                         ),
                       )

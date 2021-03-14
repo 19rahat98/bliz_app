@@ -2,17 +2,67 @@ import 'package:bliz/logic_block/blocs/bloc.dart';
 import 'package:bliz/logic_block/blocs/user_data_bloc/udata_bloc.dart';
 import 'package:bliz/logic_block/blocs/user_data_bloc/udata_event.dart';
 import 'package:bliz/logic_block/blocs/user_data_bloc/udata_state.dart';
+import 'package:bliz/ui/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class UserScreen extends StatelessWidget {
+class UserScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
+  _UserScreenState createState() => _UserScreenState();
+}
+
+class _UserScreenState extends State<UserScreen> {
+  TextEditingController _textPasswordController = TextEditingController();
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('TextField in Dialog'),
+            content: TextField(
+              controller: _textPasswordController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(hintText: "Text Field in Dialog"),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                color: Colors.red,
+                textColor: Colors.white,
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                color: Colors.green,
+                textColor: Colors.white,
+                child: Text('OK'),
+                onPressed: () {
+                  BlocProvider.of<LoginBloc>(context).add(
+                    DeleteUser(_textPasswordController.text),
+                  );
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
     BlocProvider.of<UserDataBloc>(context).add(
       OnLoadUserData(),
     );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -74,7 +124,9 @@ class UserScreen extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 17.0),
                                 ),
-                                Text(snapshot.userdata.companyDetails.first.companyName,
+                                Text(
+                                    snapshot.userdata.companyDetails.first
+                                        .companyName,
                                     style: TextStyle(
                                       fontSize: 14.0,
                                       color: Colors.grey,
@@ -371,6 +423,107 @@ class UserScreen extends StatelessWidget {
               Divider(
                 thickness: 1.5,
               ),
+              BlocBuilder<LoginBloc, LoginState>(
+                builder: (context, register) {
+                  return BlocListener<LoginBloc, LoginState>(
+                      listener: (context, state) {
+                        if (state is UserDataLoading) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (state is DeleteUserSuccess) {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return Login();
+                            },
+                          ));
+                        } else if (state is LoginFail) {
+                          final snackBar = SnackBar(
+                            content: Text(state.code),
+                            action: SnackBarAction(
+                              label: 'Ок',
+                              onPressed: () {
+                                // Some code to undo the change.
+                              },
+                            ),
+                          );
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                      child: Container(
+                        width: 300.0,
+                        height: 50.0,
+                        child: OutlineButton(
+                          onPressed: () {
+                            _displayTextInputDialog(context);
+                          },
+                          //TODO n
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.green),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.green),
+                          highlightedBorderColor: Colors.green,
+                        ),
+                      ));
+                },
+              ),
+              BlocBuilder<UserDataBloc, UserDataState>(
+                builder: (context, register) {
+                  return BlocListener<UserDataBloc, UserDataState>(
+                      listener: (context, state) {
+                        if (state is UserLogoutLoading) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (state is UserLogoutSuccess) {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return Login();
+                            },
+                          ));
+                        } else if (state is UserLogoutFail) {
+                          final snackBar = SnackBar(
+                            content: Text(state.message),
+                            action: SnackBarAction(
+                              label: 'Ок',
+                              onPressed: () {
+                                // Some code to undo the change.
+                              },
+                            ),
+                          );
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                      child: Container(
+                        width: 300.0,
+                        height: 50.0,
+                        child: OutlineButton(
+                          onPressed: () {
+                            print('test');
+                            BlocProvider.of<UserDataBloc>(context).add(
+                              UserLogout(),
+                            );
+                          },
+                          //TODO n
+                          child: Text(
+                            'Log out',
+                            style: TextStyle(color: Colors.green),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.green),
+                          highlightedBorderColor: Colors.green,
+                        ),
+                      ));
+                },
+              ),
             ],
           ),
         )),
@@ -378,3 +531,4 @@ class UserScreen extends StatelessWidget {
     );
   }
 }
+
