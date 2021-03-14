@@ -1,3 +1,4 @@
+import 'package:bliz/logic_block/providers/special_machinery_provider.dart';
 import 'package:bliz/ui/Widgets/add_vehicle.dart';
 import 'package:bliz/ui/driverMap.dart';
 import 'package:bliz/ui/favorites_list.dart';
@@ -15,7 +16,7 @@ import 'package:bliz/ui/add_cargo.dart';
 import 'logic_block/blocs/cargo_list/cargo_bloc.dart';
 import 'logic_block/blocs/user_data_bloc/udata_bloc.dart';
 import 'logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
-import 'package:bliz/logic_block/providers/city_list_provider.dart';
+import 'package:bliz/logic_block/providers/cargo_specifications_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -45,8 +46,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider<CityListProvider>(
-            create: (context) => CityListProvider(),
+          ChangeNotifierProvider<CargoSpecificationsProvider>(
+            create: (context) => CargoSpecificationsProvider(),
+          ),
+          ChangeNotifierProvider<SpecialMachineryProvider>(
+            create: (context) => SpecialMachineryProvider(),
           ),
         ],
         child: MaterialApp(

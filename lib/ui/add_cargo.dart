@@ -9,7 +9,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'package:bliz/logic_block/models/city_model.dart';
 import 'package:bliz/logic_block/models/more_models.dart';
-import 'package:bliz/logic_block/providers/city_list_provider.dart';
+import 'package:bliz/logic_block/providers/cargo_specifications_provider.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_event.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_state.dart';
@@ -100,7 +100,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     initializeDateFormatting();
-    final CityListProvider cityProv = Provider.of<CityListProvider>(context, listen: false);
+    final CargoSpecificationsProvider cityProv = Provider.of<CargoSpecificationsProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

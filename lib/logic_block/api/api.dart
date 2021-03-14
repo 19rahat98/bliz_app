@@ -18,7 +18,30 @@ class Api {
   static const String GET_TYPE_OF_CURRENCY = "/getCurrency";
   static const String GET_TYPE_OF_POST_LOADING = "/postLoading";
   static const String GET_CARGO_LIST = "/newGetPost";
+  static const String GET_EQUIPMENT_CATEGORY = "/getEquipmentCategory";
+  static const String GET_EQUIPMENT_RENT_TYPE = "/getEquipmentRent";
+  static const String GET_EQUIPMENT_TYPE = "/getEquipmentType";
   static const String DELETE_USER = "/deleteAccount";
+
+  static Future<dynamic> getEquipmentCategory() async{
+    final result = await httpManager.get(
+      url: GET_EQUIPMENT_CATEGORY,
+    );
+    return ResultApiModel.fromJson(result) ;
+  }
+  static Future<dynamic> getEquipmentType() async{
+    final result = await httpManager.get(
+      url: GET_EQUIPMENT_TYPE,
+    );
+    return ResultApiModel.fromJson(result) ;
+  }
+
+  static Future<dynamic> getEquipmentRentType() async{
+    final result = await httpManager.get(
+      url: GET_EQUIPMENT_RENT_TYPE,
+    );
+    return ResultApiModel.fromJson(result) ;
+  }
 
   static Future<dynamic> deleteUser(params) async{
     final result = await httpManager.get(

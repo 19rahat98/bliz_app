@@ -5,7 +5,7 @@ import 'package:bliz/logic_block/models/result_api_model.dart';
 import 'package:bliz/logic_block/repository/resources_repository.dart';
 import 'package:flutter/material.dart';
 
-class CityListProvider extends ChangeNotifier {
+class CargoSpecificationsProvider extends ChangeNotifier {
   List<CityData> _cityData;
   List<CityData> get cityData => _cityData;
 
