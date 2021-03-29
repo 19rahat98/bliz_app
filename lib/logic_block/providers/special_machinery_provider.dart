@@ -16,6 +16,11 @@ class SpecialMachineryProvider extends ChangeNotifier {
   List<UniversalModel> _equipmentRentType;
   List<UniversalModel> get equipmentRentType => _equipmentRentType;
 
+  List<Currency> _currencyTypeList;
+  List<Currency> get currencyTypeList => _currencyTypeList;
+
+  List<CityData> _cityData;
+  List<CityData> get cityData => _cityData;
 
   final ResourcesRepository resourcesRepository = ResourcesRepository();
 
@@ -28,6 +33,8 @@ class SpecialMachineryProvider extends ChangeNotifier {
       await getEquipmentType();
       await getEquipmentCategoryList();
       await getEquipmentRentType();
+      await getCurrencyType();
+      await getAllCityById();
       return true;
     }catch(e){
       print("CATCH MESSAGE:   ERROR ON Special MachineryProvider");
@@ -37,49 +44,89 @@ class SpecialMachineryProvider extends ChangeNotifier {
 
   }
 
+  Future getCurrencyType() async {
 
-  Future<List<UniversalModel>> getEquipmentType() async {
+    List result = await resourcesRepository.getCurrencyType();
 
-    ResultApiModel result = await resourcesRepository.getEquipmentType();
-    if(result.data.isNotEmpty || result != null){
-      final Iterable refactorCategory = result.data ?? [];
+    if(result != null){
+      final Iterable refactorCategory = result ?? [];
+      _currencyTypeList = refactorCategory.map((item) {
+        return Currency.fromJson(item);
+      }).toList();
+      notifyListeners();
+    }
+    else{
+      _currencyTypeList = [];
+      notifyListeners();
+    }
+  }
+
+
+  Future getAllCityById({int countryId}) async {
+
+    Map<String, dynamic> countryParam= {
+      "countryID": countryId == null ? 1 : countryId,
+    };
+    List result = await resourcesRepository.getCity(countryParam);
+
+    if(result != null    ){
+      final Iterable refactorCategory = result ?? [];
+      _cityData = refactorCategory.map((item) {
+        return CityData.fromJson(item);
+      }).toList();
+      notifyListeners();
+    }
+    else{
+      _cityData = [];
+      notifyListeners();
+    }
+  }
+
+
+  Future getEquipmentType() async {
+    List result = await resourcesRepository.getEquipmentType();
+    if(result != null    ){
+      final Iterable refactorCategory = result ?? [];
       _equipmentType = refactorCategory.map((item) {
         return UniversalModel.fromJson(item);
       }).toList();
-      return _equipmentType;
+      notifyListeners();
     }
     else{
-      return [];
+      _equipmentType = [];
     }
   }
 
-  Future<List<UniversalModel>> getEquipmentCategoryList() async {
 
-    ResultApiModel result = await resourcesRepository.getEquipmentCategory();
-    if(result.data.isNotEmpty || result != null){
-      final Iterable refactorCategory = result.data ?? [];
+  Future getEquipmentCategoryList() async {
+
+    List result =await resourcesRepository.getEquipmentCategory();
+    if(result != null    ){
+      final Iterable refactorCategory = result ?? [];
       _equipmentCategoryList = refactorCategory.map((item) {
         return UniversalModel.fromJson(item);
       }).toList();
-      return _equipmentCategoryList;
+      notifyListeners();
     }
     else{
-      return [];
+      _equipmentCategoryList = [];
+      notifyListeners();
     }
   }
 
-  Future<List<UniversalModel>> getEquipmentRentType() async {
+  Future getEquipmentRentType() async {
 
-    ResultApiModel result = await resourcesRepository.getEquipmentRent();
-    if(result.data.isNotEmpty || result != null){
-      final Iterable refactorCategory = result.data ?? [];
+    List result = await resourcesRepository.getEquipmentRent();
+    if(result != null    ){
+      final Iterable refactorCategory = result ?? [];
       _equipmentRentType = refactorCategory.map((item) {
         return UniversalModel.fromJson(item);
       }).toList();
-      return _equipmentRentType;
+      notifyListeners();
     }
     else{
-      return [];
+      _equipmentRentType = [];
+      notifyListeners();
     }
   }
 

@@ -149,7 +149,7 @@ class Application extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                gruzInfo.user.first.fullName != null ? '${gruzInfo.user.first.fullName}' : 'error',
+                                'error',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.0),
@@ -693,7 +693,7 @@ class Application extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 14, color: Color(0xffA2A9B2)),
                             ),
-                            Text(gruzInfo.price.first.price != null ? '${gruzInfo.price.first.price}' : 'error',
+                            Text('error',
                                 style: TextStyle(
                                     fontSize: 18, color: Color(0xff20273D))),
                             Text(

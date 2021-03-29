@@ -19,3 +19,5 @@ class OnRegister extends AuthenticationEvent {
       this.bin,
       });
 }
+
+class CheckSingInUser extends AuthenticationEvent{}

@@ -1,21 +1,15 @@
-import 'package:bliz/logic_block/providers/special_machinery_provider.dart';
-import 'package:bliz/ui/Widgets/add_vehicle.dart';
-import 'package:bliz/ui/driverMap.dart';
-import 'package:bliz/ui/favorites_list.dart';
-import 'package:bliz/ui/find_cargo.dart';
-import 'package:bliz/ui/gruz_result.dart';
-import 'package:bliz/ui/registration_second.dart';
+import 'package:bliz/ui/orders.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
+import 'package:bliz/ui/login.dart';
 import 'logic_block/blocs/bloc.dart';
-import 'package:bliz/ui/add_cargo.dart';
-import 'logic_block/blocs/cargo_list/cargo_bloc.dart';
-import 'logic_block/blocs/user_data_bloc/udata_bloc.dart';
-import 'logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
+import 'package:bliz/ui/add_vehicle.dart';
+import 'package:bliz/ui/splash_page/splash_screen.dart';
+import 'package:bliz/logic_block/providers/company_data_provider.dart';
+import 'package:bliz/logic_block/providers/special_machinery_provider.dart';
 import 'package:bliz/logic_block/providers/cargo_specifications_provider.dart';
 
 void main() {
@@ -43,6 +37,30 @@ class MyApp extends StatelessWidget {
         BlocProvider<CargoBloc>(
           create: (context) => CargoBloc(),
         ),
+        BlocProvider<AddSpecialMachineryBloc>(
+          create: (context) => AddSpecialMachineryBloc(),
+        ),
+        BlocProvider<AddNewStorageBloc>(
+          create: (context) => AddNewStorageBloc(),
+        ),
+        BlocProvider<AuctionListBloc>(
+          create: (context) => AuctionListBloc(),
+        ),
+        BlocProvider<CargoInfoBloc>(
+          create: (context) => CargoInfoBloc(),
+        ),
+        BlocProvider<WishListBloc>(
+          create: (context) => WishListBloc(),
+        ),
+        BlocProvider<InProgressApplicationBloc>(
+          create: (context) => InProgressApplicationBloc(),
+        ),
+        BlocProvider<RequestCargoBloc>(
+          create: (context) => RequestCargoBloc(),
+        ),
+        BlocProvider<CargoAdditionalInfoBloc>(
+          create: (context) => CargoAdditionalInfoBloc(),
+        ),
       ],
       child: MultiProvider(
         providers: [
@@ -51,6 +69,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider<SpecialMachineryProvider>(
             create: (context) => SpecialMachineryProvider(),
+          ),
+          ChangeNotifierProvider<CompanyDataProvider>(
+            create: (context) => CompanyDataProvider(),
           ),
         ],
         child: MaterialApp(
@@ -63,10 +84,11 @@ class MyApp extends StatelessWidget {
               headline1: GoogleFonts.ibmPlexSans(fontSize: 20, color: Colors.white),
             ),
           ),
-          home: AddVehicleScreen(),
+          home: SplashPage(),
         ),
       ),
     );
   }
 }
+
 

@@ -1,3 +1,4 @@
+import 'package:bliz/logic_block/models/cargoData.dart';
 import 'package:bliz/logic_block/models/cargo_model.dart';
 import 'package:meta/meta.dart';
 

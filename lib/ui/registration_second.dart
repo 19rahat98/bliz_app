@@ -1,10 +1,12 @@
-import 'package:bliz/ui/login.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
+import 'package:bliz/ui/login.dart';
 import 'package:bliz/ui/user_screen.dart';
+import 'package:bliz/ui/registration_first.dart';
+import 'package:bliz/ui/splash_page/navbar.dart';
 import 'package:bliz/logic_block/blocs/bloc.dart';
 
 class RegistrationSecond extends StatefulWidget {
@@ -20,8 +22,6 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
   TextEditingController _userPassword = TextEditingController();
   String password;
   bool _isHidden = true;
-
-
 
   _singUp() {
     BlocProvider.of<AuthenticationBloc>(context).add(
@@ -94,9 +94,20 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
               child: Center(
                 child: Column(
                   children: [
-                    Text(
-                      'Регистрация, 2 шаг',
-                      style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(
+                              builder: (context) => RegistrationFirst())),
+                        ),
+                        Text(
+                          'Регистрация, 2 шаг',
+                          style: TextStyle(
+                              fontSize: 23, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                     Text(
                       'Введите данные контактного лица',
@@ -134,7 +145,7 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
                         hintText: "ФИО",
                         hintStyle: TextStyle(color: Colors.grey[400]),
                         contentPadding:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       ),
                     ),
                   ),
@@ -152,8 +163,8 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
                           focusedBorder: InputBorder.none,
                           hintText: "Эл.адрес",
                           hintStyle: TextStyle(color: Colors.grey[400]),
-                          contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
                         ),
                         validator: MultiValidator([
                           RequiredValidator(errorText: "Required"),
@@ -182,7 +193,7 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
                         hintText: "Номер телефона",
                         hintStyle: TextStyle(color: Colors.grey[400]),
                         contentPadding:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       ),
                     ),
                   ),
@@ -228,7 +239,8 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
                             suffixIcon: Icon(Icons.remove_red_eye_outlined),
                           ),
                           validator: MultiValidator([
-                            RequiredValidator(errorText: 'password is required'),
+                            RequiredValidator(
+                                errorText: 'password is required'),
                             MinLengthValidator(6, errorText: "too short"),
                             // PatternValidator(r'(?=.*?[#?!@$%^&*-])', errorText: 'passwords must have at least one special character')
                           ])),
@@ -247,8 +259,8 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
                           focusedBorder: InputBorder.none,
                           hintText: "Повторите пароль",
                           hintStyle: TextStyle(color: Colors.grey[400]),
-                          contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
                           suffixIcon: InkWell(
                             onTap: _togglePasswordView,
                             child: Icon(_isHidden
@@ -269,7 +281,8 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
               builder: (context, register) {
                 return BlocListener<AuthenticationBloc, AuthenticationState>(
                     listener: (context, state) {
-                      if (state is AuthenticationFail) {
+                      if (state is AuthenticationFail &&
+                          state.code != 'User not found') {
                         _showMessage(
                           state.code,
                         );
@@ -298,7 +311,7 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return UserScreen();
+                                return MainNavigation();
                               },
                               fullscreenDialog: true,
                             ));
@@ -327,24 +340,22 @@ class _RegistrationSecondState extends State<RegistrationSecond> {
               },
             ),
             Container(
-              child: Text.rich(TextSpan(
-                  text: 'Зарегистрированы? ',
-                  children: <InlineSpan>[
-                    TextSpan(
-                      text: 'Войти',
-                      style: TextStyle(color: Colors.blue),
-                      recognizer: TapGestureRecognizer()..onTap = () {
-                        print('Terms and Conditions Single Tap');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Login()),
-                        );
-                      },
-                    )
-                  ]
-              )),
+              child: Text.rich(
+                  TextSpan(text: 'Зарегистрированы? ', children: <InlineSpan>[
+                TextSpan(
+                  text: 'Войти',
+                  style: TextStyle(color: Colors.blue),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      print('Terms and Conditions Single Tap');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
+                )
+              ])),
             ),
-
           ],
         ),
       ),

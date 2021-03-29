@@ -1,2 +1,14 @@
 export 'authentication_bloc/bloc.dart';
+export 'add_special_machinery_bloc/bloc.dart';
 export 'login_bloc/bloc.dart';
+export 'add_cargo_bloc/bloc.dart';
+export 'user_data_bloc/bloc.dart';
+export 'cargo_list/bloc.dart';
+export 'storage_bloc/bloc.dart';
+export 'auction_list_bloc//bloc.dart';
+export 'get_cargo_info_bloc/bloc.dart';
+export 'favorite_cargo_bloc/bloc.dart';
+export 'request_cargo_bloc/bloc.dart';
+export 'in_progress_application/bloc.dart';
+export 'cargo_info_bloc/bloc.dart';
+export 'get_in_work_orders_bloc/bloc.dart';

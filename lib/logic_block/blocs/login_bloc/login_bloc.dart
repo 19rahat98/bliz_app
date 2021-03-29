@@ -16,6 +16,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   @override
   Stream<LoginState> mapEventToState(event) async* {
+    final SharedPreferences prefs = await _prefs;
     ///Event for login
     if (event is OnLogin) {
       ///Notify loading to UI
@@ -30,34 +31,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       ///Case API fail but not have token
       if (result.success) {
-
-        Map<String, dynamic> userToken = {
-          "token": result.token,
-        };
-
-        final ResultApiModel userData = await userRepository.getUser(userToken);
-        print(userData.data);
-        print('++++++++');
-        if(userData.success){
-          ///Login API success
-          //TODO mukan kotaktan surau!!!!!
-          final User user = User.fromJson(userData.data.first);
-          try {
-            ///Set token network
-            httpManager.baseOptions.headers["Authorization"] =
-                "Bearer " + result.token;
-            ///Begin save user on SharedPreferences
-            final SharedPreferences prefs = await _prefs;
-            await prefs.setString("token", user.token);
-            print('LoginSuccess');
-            ///Notify loading to UI
-            yield LoginSuccess();
-          } catch (error) {
-            ///Notify loading to UI
-            yield LoginFail(code: error.toString());
-          }
+        try {
+          ///Set token network
+          httpManager.baseOptions.headers["Authorization"] =
+              "Bearer " + result.token;
+          ///Begin save user on SharedPreferences
+          final SharedPreferences prefs = await _prefs;
+          await prefs.setString("token", result.token);
+          ///Notify loading to UI
+          yield LoginSuccess();
+        } catch (error) {
+          ///Notify loading to UI
+          yield LoginFail(code: error.toString());
         }
-
       } else {
         ///Notify loading to UI
         print(result.message);

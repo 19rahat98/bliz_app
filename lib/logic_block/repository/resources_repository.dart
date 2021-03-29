@@ -20,7 +20,7 @@ class ResourcesRepository{
     return await Api.getPostLoadingType();
   }
 
-
+  ///Equipment Repository
   Future<dynamic> getEquipmentCategory() async {
     return await Api.getEquipmentCategory();
   }
@@ -28,6 +28,11 @@ class ResourcesRepository{
     return await Api.getEquipmentType();
   }
   Future<dynamic> getEquipmentRent() async {
-    return await Api.getPostLoadingType();
+    return await Api.getEquipmentRentType();
+  }
+
+  ///CompanyData Repository
+  Future<dynamic> getCompanyType() async {
+    return await Api.getCompanyType();
   }
 }

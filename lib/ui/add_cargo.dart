@@ -1,15 +1,14 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:bliz/ui/published.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bliz/ui/Widgets/empty_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
+import 'package:bliz/ui/published.dart';
+import 'package:bliz/ui/Widgets/empty_page.dart';
+import 'package:bliz/logic_block/blocs/bloc.dart';
 import 'package:bliz/logic_block/models/city_model.dart';
 import 'package:bliz/logic_block/models/more_models.dart';
-import 'package:bliz/logic_block/providers/cargo_specifications_provider.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_bloc.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_event.dart';
 import 'package:bliz/logic_block/blocs/add_cargo_bloc/add_cargo_state.dart';
@@ -20,15 +19,20 @@ class AddCargoScreen extends StatefulWidget {
 }
 
 class _AddCargoScreenState extends State<AddCargoScreen> {
-  int _cityNameFrom;
-  int _cityNameTo;
+  String _cityNameFrom;
+  String _cityNameTo;
   String _shippingDate;
   int _typeVehicle;
   int _typePayment;
   String _loadingDateTimeString = 'Выберите дату';
+  String _endDateTimeString = 'Выберите дату';
   bool _loadingDateChosen = false;
+  bool _endDateChosen = false;
+  final _name = TextEditingController();
   final _widthFrom = TextEditingController();
   final _widthTo = TextEditingController();
+  final _netTo = TextEditingController();
+  final _netFrom = TextEditingController();
   final _priceFrom = TextEditingController();
   final _priceTo = TextEditingController();
 
@@ -37,17 +41,19 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
       AddCargo(
         categoryId: 1,
         subCategoryId: 1,
-        title: "tests",
-        from: 1,
-        toOrder: 4,
-        volume: 35.332,
-        net: 23,
-        startDate: '21.02.21',
+        title: _name.text,
+        from: 'ChIJMQzHr3HMSkERlMR0p2xNoiY',
+        toOrder: 'ChIJq8vFFn1ugzgRdm2YrY9mRD0',
+        volume: _widthFrom.text,
+        net: _netFrom.text,
+        startDate: _loadingDateTimeString,
         endDate: '21.02.21',
         documents: '1,2',
         price: 1232,
-        paymentType: 1,
-        priceType: 1,
+        paymentType: _typePayment,
+        priceType: _priceFrom.text,
+        toCityString: _cityNameTo,
+        fromString: _cityNameFrom,
       ),
     );
   }
@@ -96,11 +102,16 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
   }
 
   @override
+  void initState() {
+    BlocProvider.of<CargoAdditionalInfoBloc>(context).add(GetCargoInfo());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     initializeDateFormatting();
-    final CargoSpecificationsProvider cityProv = Provider.of<CargoSpecificationsProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -111,40 +122,38 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
         ),
         leadingWidth: w * 0.25,
-        leading: Row(
-          children: [
-            Container(
-              width: 30,
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  )),
-            ),
-            Text(
-              'Назад',
-              style: TextStyle(fontSize: 17),
-            )
-          ],
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: Row(
+            children: [
+              Container(
+                width: 30,
+                child: Icon(
+                  Icons.arrow_back_ios_outlined,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              Text(
+                'Назад',
+                style: TextStyle(fontSize: 17),
+              )
+            ],
+          ),
         ),
         actions: [
           Container(
               margin: EdgeInsets.only(right: 15), child: Icon(Icons.close)),
         ],
       ),
-      body: FutureBuilder<bool>(
-          future: cityProv.getData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.none)
+      body: BlocBuilder<CargoAdditionalInfoBloc, CargoAdditionalInfoState>(
+          builder: (context, stateCargo) {
+            if (stateCargo is InitialCargoAdditionalInfoState || stateCargo is CargoAdditionalInfoLoading)
               return Center(child: CircularProgressIndicator());
-            else if (snapshot.hasError || snapshot.data == false)
+            else if (stateCargo is CargoAdditionalInfoFail)
               return Center(
-                  child: emptyPage(Icons.error_outline, 'Something is wrong'));
-            else if (snapshot.data == true) {
+                  child: emptyPage(Icons.error_outline, stateCargo.code));
+            else if (stateCargo is CargoAdditionalInfoSuccess) {
               return SingleChildScrollView(
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -186,6 +195,31 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Название',
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xff20273D).withOpacity(0.5)),
+                                  ),
+                                ),
+
+                                Container(
+                                  width: w,
+                                  height: 60,
+                                  margin: EdgeInsets.only(bottom: 15),
+                                  child: TextFormField(
+                                    controller: _name,
+                                    decoration: InputDecoration(
+                                        hintText: "Укажите название груза",
+                                        hintStyle: TextStyle(color: Color(0xffA2A9B2))),
+                                  ),
+                                ),
+                              ],
+                            ),
                             Container(
                               child: Text(
                                 'Откуда',
@@ -198,7 +232,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                               width: w,
                               height: 60,
                               margin: EdgeInsets.only(bottom: 15),
-                              child: DropdownButton<int>(
+                              child: DropdownButton<String>(
                                 hint: Text(
                                   'Откуда',
                                   style: TextStyle(
@@ -215,14 +249,12 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                   color: Color(0xffDFE2E5),
                                 ),
                                 dropdownColor: Colors.white,
-                                onChanged: (int newValue) {
-                                  setState(() {
-                                    _cityNameFrom = newValue;
-                                  });
+                                onChanged: (String newValue) {
+                                  _cityNameFrom = newValue;
                                 },
-                                items: cityProv.cityData.map((CityData map) {
-                                  return DropdownMenuItem<int>(
-                                    value: map.id,
+                                items: stateCargo.cityData.map((CityData map) {
+                                  return DropdownMenuItem<String>(
+                                    value: map.name,
                                     child: new Text(
                                       map.name,
                                       overflow: TextOverflow.ellipsis,
@@ -246,7 +278,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                               width: w,
                               height: 60,
                               margin: EdgeInsets.only(bottom: 15),
-                              child: DropdownButton<int>(
+                              child: DropdownButton<String>(
                                 hint: Text(
                                   'Куда',
                                   style: TextStyle(
@@ -263,14 +295,12 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                   color: Color(0xffDFE2E5),
                                 ),
                                 dropdownColor: Colors.white,
-                                onChanged: (int newValue) {
-                                  setState(() {
-                                    _cityNameTo = newValue;
-                                  });
+                                onChanged: (String newValue) {
+                                  _cityNameTo = newValue;
                                 },
-                                items: cityProv.cityData.map((CityData map) {
-                                  return DropdownMenuItem<int>(
-                                    value: map.id,
+                                items: stateCargo.cityData.map((CityData map) {
+                                  return DropdownMenuItem<String>(
+                                    value: map.name,
                                     child: new Text(
                                       map.name,
                                       overflow: TextOverflow.ellipsis,
@@ -301,19 +331,19 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                       minTime: DateTime.now(),
                                       maxTime: DateTime(2030, 1, 1),
                                       onConfirm: (date) {
-                                    print('confirm $date');
-                                    setState(() {
-                                      _loadingDateTimeString =
-                                          DateFormat.yMMMd('ru').format(date);
-                                      _loadingDateChosen = true;
-                                    });
-                                  },
+                                        print('confirm $date');
+                                        setState(() {
+                                          _loadingDateTimeString =
+                                              DateFormat.yMMMd('ru').format(date);
+                                          _loadingDateChosen = true;
+                                        });
+                                      },
                                       currentTime: DateTime.now(),
                                       locale: LocaleType.ru);
                                 },
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       _loadingDateTimeString,
@@ -321,6 +351,58 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                       style: TextStyle(
                                         fontSize: 17,
                                         color: _loadingDateChosen == true
+                                            ? Color(0xff20273D)
+                                            : Color(0xffA2A9B2),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 12,
+                                      color: Colors.black.withOpacity(0.7),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Text(
+                                'Дата выгрузки',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff20273D).withOpacity(0.5)),
+                              ),
+                            ),
+                            Container(
+                              width: w,
+                              height: 50,
+                              margin: EdgeInsets.only(bottom: 15),
+                              child: InkWell(
+                                onTap: () {
+                                  DatePicker.showDatePicker(context,
+                                      showTitleActions: true,
+                                      minTime: DateTime.now(),
+                                      maxTime: DateTime(2030, 1, 1),
+                                      onConfirm: (date) {
+                                        print('confirm $date');
+                                        setState(() {
+                                          _endDateTimeString =
+                                              DateFormat.yMMMd('ru').format(date);
+                                          _endDateChosen = true;
+                                        });
+                                      },
+                                      currentTime: DateTime.now(),
+                                      locale: LocaleType.ru);
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _endDateTimeString,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: _endDateChosen == true
                                             ? Color(0xff20273D)
                                             : Color(0xffA2A9B2),
                                       ),
@@ -366,12 +448,10 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                       style: TextStyle(color: Colors.black87),
                                       dropdownColor: Colors.white,
                                       onChanged: (int newValue) {
-                                        setState(() {
-                                          _typeVehicle = newValue;
-                                        });
+                                        _typeVehicle = newValue;
                                       },
-                                      items: cityProv.postLoadingList
-                                          .map((PostLoading map) {
+                                      items: stateCargo.postLoadingList
+                                          .map((UniversalModel map) {
                                         return DropdownMenuItem<int>(
                                           value: map.id,
                                           child: new Text(
@@ -472,7 +552,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                     padding: EdgeInsets.only(left: 10),
                                     width: w * 0.45,
                                     child: TextField(
-                                      controller: _priceFrom,
+                                      controller: _netFrom,
                                       keyboardType: TextInputType.number,
                                       decoration: new InputDecoration(
                                           border: InputBorder.none,
@@ -499,7 +579,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                     padding: EdgeInsets.only(left: 10),
                                     width: w * 0.45,
                                     child: TextField(
-                                      controller: _priceTo,
+                                      controller: _netTo,
                                       keyboardType: TextInputType.number,
                                       decoration: new InputDecoration(
                                           border: InputBorder.none,
@@ -543,12 +623,10 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                 ),
                                 dropdownColor: Colors.white,
                                 onChanged: (int newValue) {
-                                  setState(() {
-                                    _typePayment = newValue;
-                                  });
+                                  _typePayment = newValue;
                                 },
                                 items:
-                                    cityProv.paymentTypeList.map((Payment map) {
+                                  stateCargo.paymentTypeList.map((UniversalModel map) {
                                   return DropdownMenuItem<int>(
                                     value: map.id,
                                     child: new Text(
@@ -621,9 +699,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                 ],
                               ),
                             ),
-                            BlocBuilder<AddCargoBloc, AddCargoState>(
-                              builder: (context, register) {
-                                return BlocListener<AddCargoBloc,
+                            BlocListener<AddCargoBloc,
                                         AddCargoState>(
                                     listener: (context, state) {
                                       if (state is InitialAddACargoState ||
@@ -632,6 +708,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                           child: CircularProgressIndicator(),
                                         );
                                       } else if (state is AddCargoFail) {
+                                        print('asdasdasdadsasdsad');
                                         _showMessage(
                                           state.code,
                                         );
@@ -674,10 +751,7 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
                                             horizontal: 25.0, vertical: 10.0),
                                       ),
                                     ),
-                                );
-                              },
                             ),
-
                           ],
                         ),
                       )
@@ -687,7 +761,8 @@ class _AddCargoScreenState extends State<AddCargoScreen> {
               );
             } else
               return Center(child: CircularProgressIndicator());
-          }),
+          },
+      ),
     );
   }
 }

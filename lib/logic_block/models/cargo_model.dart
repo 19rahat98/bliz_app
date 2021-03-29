@@ -35,42 +35,18 @@ class Result {
 
 class Data {
   int id;
-  List<User> user;
+  String updatedAt;
   List<Details> details;
-  List<Additional> additional;
-  List<Price> price;
 
-  Data({this.id, this.user, this.details, this.additional, this.price});
+  Data({this.id, this.updatedAt, this.details});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    if (json['user'] != null) {
-      user = new List<User>();
-      json['user'].forEach((v) {
-        user.add(new User.fromJson(v));
-      });
-    }
+    updatedAt = json['updated_at'];
     if (json['details'] != null) {
       details = new List<Details>();
       json['details'].forEach((v) {
         details.add(new Details.fromJson(v));
-      });
-    }
-    if (json['additional'] != null) {
-      additional = new List<Additional>();
-      json['additional'].forEach((value) {
-        if(value.isNotEmpty){
-          additional.add(new Additional.fromJson(value));
-        }
-        print(json["id"]);
-        print(value);
-
-      });
-    }
-    if (json['price'] != null) {
-      price = new List<Price>();
-      json['price'].forEach((v) {
-        price.add(new Price.fromJson(v));
       });
     }
   }
@@ -78,18 +54,76 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    if (this.user != null) {
-      data['user'] = this.user.map((v) => v.toJson()).toList();
-    }
+    data['updated_at'] = this.updatedAt;
     if (this.details != null) {
       data['details'] = this.details.map((v) => v.toJson()).toList();
     }
-    if (this.additional != null) {
-      data['additional'] = this.additional.map((v) => v.toJson()).toList();
-    }
-    if (this.price != null) {
-      data['price'] = this.price.map((v) => v.toJson()).toList();
-    }
+    return data;
+  }
+}
+
+class Details {
+  String startDate;
+  String endDate;
+  String from;
+  String to;
+  int volume;
+  int net;
+  String typeTransport;
+  String title;
+  dynamic price;
+  String fromString;
+  String toCityString;
+  String distance;
+  String duration;
+
+  Details({
+    this.startDate,
+    this.endDate,
+    this.from,
+    this.to,
+    this.volume,
+    this.net,
+    this.typeTransport,
+    this.title,
+    this.price,
+    this.fromString,
+    this.toCityString,
+    this.distance,
+    this.duration,
+  });
+
+  Details.fromJson(Map<String, dynamic> json) {
+    startDate = json['start_date'];
+    endDate = json['end_date'];
+    from = json['from'];
+    to = json['to'];
+    volume = json['volume'];
+    net = json['net'];
+    typeTransport = json['type_transport'];
+    title = json['title'];
+    price = json['price'];
+    fromString = json['from_string'];
+    toCityString = json['to_string'];
+    duration = json['duration'];
+    distance = json['distance'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['start_date'] = this.startDate;
+    data['end_date'] = this.endDate;
+    data['from'] = this.from;
+    data['to'] = this.to;
+    data['volume'] = this.volume;
+    data['net'] = this.net;
+    data['type_transport'] = this.typeTransport;
+    data['title'] = this.title;
+    data['price'] = this.price;
+    data['from_string'] = this.fromString;
+    data['to_string'] = this.toString;
+    data['distance'] = this.distance;
+    data['duration'] = this.duration;
     return data;
   }
 }
@@ -106,13 +140,13 @@ class User {
 
   User(
       {this.id,
-        this.fullName,
-        this.email,
-        this.phone,
-        this.address,
-        this.image,
-        this.token,
-        this.companyDetails});
+      this.fullName,
+      this.email,
+      this.phone,
+      this.address,
+      this.image,
+      this.token,
+      this.companyDetails});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -166,47 +200,6 @@ class CompanyDetails {
   }
 }
 
-class Details {
-  String from;
-  String to;
-  dynamic distance;
-  String startDate;
-  String endDate;
-  dynamic volume;
-  int net;
-
-  Details(
-      {this.from,
-        this.to,
-        this.distance,
-        this.startDate,
-        this.endDate,
-        this.volume,
-        this.net});
-
-  Details.fromJson(Map<String, dynamic> json) {
-    from = json['from'];
-    to = json['to'];
-    distance = json['distance'];
-    startDate = json['start_date'];
-    endDate = json['end_date'];
-    volume = json['volume'];
-    net = json['net'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['from'] = this.from;
-    data['to'] = this.to;
-    data['distance'] = this.distance;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['volume'] = this.volume;
-    data['net'] = this.net;
-    return data;
-  }
-}
-
 class Additional {
   List docs;
 
@@ -223,31 +216,9 @@ class Additional {
     });
   }
 
-
-
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['docs'] = this.docs;
-    return data;
-  }
-}
-
-class Price {
-  String price;
-  String paymentType;
-
-  Price({this.price, this.paymentType});
-
-  Price.fromJson(Map<String, dynamic> json) {
-    price = json['price'];
-    paymentType = json['payment_type'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['price'] = this.price;
-    data['payment_type'] = this.paymentType;
     return data;
   }
 }
