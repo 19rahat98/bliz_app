@@ -21,7 +21,6 @@ class AuctionListBloc extends Bloc<AuctionListEvent, AuctionListState> {
       final ResultApiModel result = await auctionRepository.getAuctionList();
       ///Case success
       if (result.success && result.data != []) {
-        print('hg');
         final Iterable iterableList = result?.data ?? [];
         final auctionList = iterableList.map((item){
           return Data.fromJson(item);
