@@ -7,3 +7,4 @@ class GetCargoFromDb extends CargoEvent {
     this.id,
   });
 }
+

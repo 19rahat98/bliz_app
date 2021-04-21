@@ -24,9 +24,6 @@ class AddCargoBloc extends Bloc<AddingCargoEvent, AddCargoState> {
 
       final SharedPreferences cp = await _prefs;
 
-      print('asdasdasdadas');
-      print(cp.getString("token"));
-
       Map<String, dynamic> params = {
         "token": cp.getString("token"),
         "category_id": event.categoryId,
@@ -40,10 +37,13 @@ class AddCargoBloc extends Bloc<AddingCargoEvent, AddCargoState> {
         "end_date": event.endDate,
         "documents[]": event.documents,
         "price": event.price,
-        "price_type": event.priceType,
+        "price_type":  1,
         "payment_type": event.paymentType,
+        "type_transport": 1,
+        "from_string": event.fromString,
+        "to_string": event.toCityString,
       };
-      print(params.runtimeType);
+      print(params);
       print('asdasdasdas');
       ///Fetch API via repository
       final ResultApiModel result = await addCargoRepository.addNewCargo(params);

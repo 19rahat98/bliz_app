@@ -1,3 +1,5 @@
+import 'package:bliz/ui/splash_page/navbar.dart';
+
 import 'technic_categories.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +51,7 @@ class Published extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                       context,
-                    MaterialPageRoute(builder: (context) => TechnicCategories()),
+                    MaterialPageRoute(builder: (context) => MainNavigation()),
                   );
                 },
                 child: Container(

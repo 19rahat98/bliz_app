@@ -19,4 +19,20 @@ class ResourcesRepository{
   Future<dynamic> getPostLoadingType() async {
     return await Api.getPostLoadingType();
   }
+
+  ///Equipment Repository
+  Future<dynamic> getEquipmentCategory() async {
+    return await Api.getEquipmentCategory();
+  }
+  Future<dynamic> getEquipmentType() async {
+    return await Api.getEquipmentType();
+  }
+  Future<dynamic> getEquipmentRent() async {
+    return await Api.getEquipmentRentType();
+  }
+
+  ///CompanyData Repository
+  Future<dynamic> getCompanyType() async {
+    return await Api.getCompanyType();
+  }
 }

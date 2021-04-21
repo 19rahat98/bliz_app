@@ -4,15 +4,17 @@ class AddCargo extends AddingCargoEvent {
   final int categoryId;
   final int subCategoryId;
   final String title;
-  final int from;
-  final int toOrder;
-  final double volume;
-  final int net;
+  final String from;
+  final String toOrder;
+  final String volume;
+  final String net;
   final String startDate;
   final String endDate;
   final String documents;
+  final String fromString;
+  final String toCityString;
   final int price;
-  final int priceType;
+  final String priceType;
   final int paymentType;
 
   AddCargo({
@@ -29,5 +31,7 @@ class AddCargo extends AddingCargoEvent {
     this.price,
     this.priceType,
     this.paymentType,
+    this.fromString,
+    this.toCityString,
   });
 }

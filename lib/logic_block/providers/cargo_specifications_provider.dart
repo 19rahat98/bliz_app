@@ -5,7 +5,7 @@ import 'package:bliz/logic_block/models/result_api_model.dart';
 import 'package:bliz/logic_block/repository/resources_repository.dart';
 import 'package:flutter/material.dart';
 
-class CityListProvider extends ChangeNotifier {
+class CargoSpecificationsProvider extends ChangeNotifier {
   List<CityData> _cityData;
   List<CityData> get cityData => _cityData;
 
@@ -51,7 +51,7 @@ class CityListProvider extends ChangeNotifier {
   Future<List<PostLoading>> getPostLoadingType() async {
 
     ResultApiModel result = await resourcesRepository.getPostLoadingType();
-    if(result.data.isNotEmpty || result != null){
+    if( result != null && result.data.isNotEmpty ){
       final Iterable refactorCategory = result.data ?? [];
       _postLoadingList = refactorCategory.map((item) {
         return PostLoading.fromJson(item);
@@ -70,7 +70,7 @@ class CityListProvider extends ChangeNotifier {
     };
     List result = await resourcesRepository.getCity(countryParam);
 
-    if(result.isNotEmpty || result != null){
+    if(   result != null){
       final Iterable refactorCategory = result ?? [];
       _cityData = refactorCategory.map((item) {
         return CityData.fromJson(item);
@@ -86,7 +86,7 @@ class CityListProvider extends ChangeNotifier {
 
     ResultApiModel result = await resourcesRepository.getDocumentsList();
 
-    if(result.data.isNotEmpty || result.data != null){
+    if(result.data != null){
       final Iterable refactorCategory = result.data ?? [];
       _documentsList = refactorCategory.map((item) {
         return Documents.fromJson(item);
@@ -102,7 +102,7 @@ class CityListProvider extends ChangeNotifier {
 
     List result = await resourcesRepository.getPaymentType();
 
-    if(result.isNotEmpty || result != null){
+    if(result != null){
       final Iterable refactorCategory = result ?? [];
       _paymentTypeList = refactorCategory.map((item) {
         return Payment.fromJson(item);
@@ -118,7 +118,7 @@ class CityListProvider extends ChangeNotifier {
 
     List result = await resourcesRepository.getCurrencyType();
 
-    if(result.isNotEmpty || result != null){
+    if(   result != null){
       final Iterable refactorCategory = result ?? [];
       _currencyTypeList = refactorCategory.map((item) {
         return Currency.fromJson(item);
@@ -134,7 +134,7 @@ class CityListProvider extends ChangeNotifier {
 
     List result = await resourcesRepository.getCountry();
 
-    if(result.isNotEmpty || result != null){
+    if(   result != null){
       final Iterable refactorCategory = result ?? [];
       _countryList = refactorCategory.map((item) {
         return CountryModel.fromJson(item);

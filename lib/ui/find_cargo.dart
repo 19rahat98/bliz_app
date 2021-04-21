@@ -321,10 +321,10 @@ class FindCargo extends StatelessWidget {
                                                 ),
                                               ],
                                             ),
-                                            Align(
+                                           /* Align(
                                               child: SvgPicture.asset('assets/Shape.svg'),
-                                            ),
-                                            //Icon(Icons.star_border_outlined, size: 30,)
+                                            ),*/
+                                            Icon(Icons.star_border_outlined, size: 30,)
                                           ],
                                         ),
 

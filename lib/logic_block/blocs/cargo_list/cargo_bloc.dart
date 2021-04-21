@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bliz/logic_block/models/cargoData.dart';
 import 'package:bliz/logic_block/models/cargo_model.dart';
 import 'package:bliz/logic_block/models/result_api_model.dart';
 import 'package:bliz/logic_block/repository/cargo_repository.dart';
@@ -18,13 +19,11 @@ class CargoBloc extends Bloc<CargoEvent, CargoState> {
       yield CargoLoading();
       Map<String, dynamic> params = {
         "category_id": event.id == null ? 1 : event.id,
-        "page": 2,
+        "page": 0,
       };
 
       ///Fetch register
       final ResultApiModel result = await cargoRepository.getCargoList(params);
-      print(result.success);
-      print(result.data);
       ///Case success
       if (result.success && result.data != []) {
         print('hg');
@@ -32,9 +31,6 @@ class CargoBloc extends Bloc<CargoEvent, CargoState> {
         final listCategoriesItems = iterableList.map((item){
           return Data.fromJson(item);
         }).toList();
-        for(var item in listCategoriesItems){
-          print(item.details.first.from.toString());
-        }
         //final Data cargoData = Data.fromJson(result.data.first);
         //print(cargoData.user.first.fullName);
         ///Notify loading to UI

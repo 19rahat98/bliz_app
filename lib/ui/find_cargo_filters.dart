@@ -1,3 +1,5 @@
+import 'package:bliz/ui/find_cargo.dart';
+import 'package:bliz/ui/gruz_result.dart';
 import 'package:flutter/material.dart';
 
 class FindCargoFilters extends StatefulWidget {
@@ -521,7 +523,9 @@ class _FindCargoFiltersState extends State<FindCargoFilters> {
                 width: w * 0.9,
                 height: 50,
                 child: FlatButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => GruzResult()));
+                  },
                   child: Text(
                     'НАЙТИ ГРУЗЫ',
                     style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),

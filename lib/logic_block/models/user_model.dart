@@ -3,8 +3,8 @@ class User {
   String fullName;
   String email;
   String phone;
-  Null address;
-  Null image;
+  String address;
+  String image;
   String token;
   List<CompanyDetails> companyDetails;
 
